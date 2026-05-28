@@ -8,6 +8,7 @@ import org.testng.asserts.SoftAssert;
 import pages.ContactsPage;
 import pages.HomePage;
 import pages.LoginPage;
+import static utils.PropertiesReader.*;
 
 public class LoginTests extends AppManager {
     SoftAssert softAssert = new SoftAssert();
@@ -15,8 +16,8 @@ public class LoginTests extends AppManager {
     @Test
     public void loginPositiveTest() {
         User user = User.builder()
-                .username("sveta548@smd.com")
-                .password("Password123!")
+                .username(getProperty("base.properties", "email"))
+                .password(getProperty("base.properties", "password"))
                 .build();
         new HomePage(getDriver()).clickBtnLogin();
         LoginPage loginPage = new LoginPage(getDriver());
@@ -31,7 +32,65 @@ public class LoginTests extends AppManager {
         softAssert.assertAll();
     }
 
+    @Test
+    public void loginNegative_AllFieldsEmpty_Test(){
+        new HomePage(getDriver()).clickBtnLogin();
+        LoginPage loginPage = new LoginPage(getDriver());
+        loginPage.clickBtnLogin();
+        Assert.assertEquals(loginPage.closeAlert(), "Wrong email or password");
+    }
 
+    @Test
+    public void loginNegative_EmptyFieldEmail_Test(){
+        User user = User.builder()
+                .username("")
+                .password(getProperty("base.properties", "password"))
+                .build();
+        new HomePage(getDriver()).clickBtnLogin();
+        LoginPage loginPage = new LoginPage(getDriver());
+        loginPage.typeLoginRegistrationForm(user);
+        loginPage.clickBtnLogin();
+        Assert.assertEquals(loginPage.closeAlert(), "Wrong email or password");
+    }
+
+    @Test
+    public void loginNegative_EmptyFieldPassword_Test(){
+        User user = User.builder()
+                .username(getProperty("base.properties", "email"))
+                .password("")
+                .build();
+        new HomePage(getDriver()).clickBtnLogin();
+        LoginPage loginPage = new LoginPage(getDriver());
+        loginPage.typeLoginRegistrationForm(user);
+        loginPage.clickBtnLogin();
+        Assert.assertEquals(loginPage.closeAlert(), "Wrong email or password");
+    }
+
+    @Test
+    public void loginNegative_WrongEmail_Test(){
+        User user = User.builder()
+                .username("asdert123@rty.com")
+                .password(getProperty("base.properties", "password"))
+                .build();
+        new HomePage(getDriver()).clickBtnLogin();
+        LoginPage loginPage = new LoginPage(getDriver());
+        loginPage.typeLoginRegistrationForm(user);
+        loginPage.clickBtnLogin();
+        Assert.assertEquals(loginPage.closeAlert(), "Wrong email or password");
+    }
+
+    @Test
+    public void loginNegative_WrongPassword_Test(){
+        User user = User.builder()
+                .username(getProperty("base.properties", "email"))
+                .password("A123vbgt!")
+                .build();
+        new HomePage(getDriver()).clickBtnLogin();
+        LoginPage loginPage = new LoginPage(getDriver());
+        loginPage.typeLoginRegistrationForm(user);
+        loginPage.clickBtnLogin();
+        Assert.assertEquals(loginPage.closeAlert(), "Wrong email or password");
+    }
 //    @Test
 //    public void testMethod(){
 //        new HomePage(getDriver()).method();
