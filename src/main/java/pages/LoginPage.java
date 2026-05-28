@@ -26,4 +26,8 @@ public class LoginPage extends BasePage {
         inputEmail.sendKeys(user.getUsername());
         inputPassword.sendKeys(user.getPassword());
     }
+
+    public void clickBtnLogin(){
+        btnLogin.click();
+    }
 }
